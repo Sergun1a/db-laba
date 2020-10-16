@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Question;
 use Yii;
 use yii\base\DynamicModel;
 use yii\filters\AccessControl;
@@ -73,10 +74,15 @@ class SiteController extends Controller
     public function actionQuestions()
     {
         $model = new DynamicModel(['themes', 'include_hard']);
-        $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean');
-        if($model->load(Yii::$app->request->post())){
-            // do somenthing with model
-            return $this->render('index');
+        $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
+            ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
+        if ($model->load(Yii::$app->request->post())) {
+            $type = \Yii::$app->request->get('type');
+            if (!is_null($type)) {
+                // do somenthing with model
+                $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard);
+                return $this->render('index');
+            }
         }
         return $this->render('setupQuestions', [
             'model' => $model,

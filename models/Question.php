@@ -18,6 +18,19 @@ class Question extends ActiveRecord
     const TYPE_THEORY   = 'theory';
     const TYPE_PRACTICE = 'practice';
 
+    public static function themesList()
+    {
+        return [
+            1 => 'Что такое базы данных',
+            2 => 'Реляционная модель данных',
+            3 => 'Язык SQL',
+            4 => 'Проектирование на основе принципов нормализации',
+            5 => 'Логическое моделирование. Модель «сущность-связь»',
+            6 => 'Транзакции',
+            7 => 'Технологии клиент-сервер',
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -36,5 +49,10 @@ class Question extends ActiveRecord
             [['question', 'type'], 'string'],
             [['is_hard'], 'boolean'],
         ];
+    }
+
+
+    public static function prepareQuestions($type, $themes, $include_hard) {
+
     }
 }

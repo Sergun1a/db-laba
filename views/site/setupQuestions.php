@@ -1,10 +1,13 @@
 <?php
-
+/* Ссылка на виджет мультиселекта
+https://github.com/2amigos/yii2-multi-select-widget
+ */
 /* @var $this yii\web\View */
 /* @var $form */
 
 /* @var $model */
 
+use dosamigos\multiselect\MultiSelect;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
@@ -14,24 +17,23 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-login">
     <p>Пожалуйста заполните следующие поля:</p>
     <?php $form = ActiveForm::begin([
-        'id'          => 'login-form',
-        'layout'      => 'horizontal',
-        'fieldConfig' => [
-            'template'     => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 control-label'],
-        ],
+        'id' => 'question-form',
     ]); ?>
-
-    <?= $form->field($model, 'themes')->textInput(['autofocus' => true]) ?>
-    <?= $form->field($model, 'include_hard')->checkbox([
-        'template' => "<div class=\"col-lg-offset-1 col-lg-3\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
-    ]) ?>
-
-    <div class="form-group">
-        <div class="col-lg-offset-1 col-lg-11">
-            <?= Html::submitButton('Готово', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-        </div>
-    </div>
+    <?= $form->field($model, 'themes')->widget(MultiSelect::className(), [
+        "options"       => ['multiple' => "multiple"],
+        'data'          => \app\models\Question::themesList(),
+        "clientOptions" =>
+            [
+                "includeSelectAllOption" => true,
+                'allSelectedText'        => "Выбрать все",
+                'selectAllText'          => "Выбрать все",
+                'nSelectedText'          => 'Выбрано',
+                'nonSelectedText'        => 'Выберите тему',
+            ],
+    ])->label("Выберите тему/темы") ?>
+    <?= $form->field($model, 'include_hard')->checkbox()->label("Включать сложные задачи/вопросы") ?>
+    <?= Html::submitButton('Готово', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
 
     <?php ActiveForm::end(); ?>
 </div>
+
