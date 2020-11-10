@@ -7,7 +7,7 @@ $db       = 'heroku_e130fe6d416e3df';
 /* Heroku config */
 return [
     'class'    => 'yii\db\Connection',
-    'dsn'      => 'mysql:host=localhost;dbname=' . $db,
+    'dsn'      => 'mysql:host='.$server.';dbname=' . $db,
     'username' => $username,
     'password' => $password,
     'charset'  => 'utf8',
