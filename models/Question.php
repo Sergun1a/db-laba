@@ -63,7 +63,7 @@ class Question extends ActiveRecord
             $variants[$counter / $divider + 1][] = $question;
             $counter++;
         }
-        // если число вопросов не кратно хотя бы 3, то избавляюсь от последнего варианта, т.к в нем недостаток вопросов
+        // если число вопросов не кратно divider, то избавляюсь от последнего варианта, т.к в нем недостаток вопросов
         if (!$rounded_array) {
             unset($variants[--$counter / $divider + 1]);
         }
