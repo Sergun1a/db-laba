@@ -6,11 +6,8 @@ use app\models\Question;
 use Yii;
 use yii\base\DynamicModel;
 use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\Response;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
+use yii\web\Controller;
 
 class SiteController extends Controller
 {
@@ -81,7 +78,10 @@ class SiteController extends Controller
             if (!is_null($type)) {
                 // do somenthing with model
                 $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard);
-                return $this->render('index');
+                return $this->render('variants', [
+                    'type'     => $type,
+                    'variants' => $questions,
+                ]);
             }
         }
         return $this->render('setupQuestions', [
