@@ -12,7 +12,6 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 $this->title                   = 'Подготовка';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login">
     <p>Пожалуйста заполните следующие поля:</p>

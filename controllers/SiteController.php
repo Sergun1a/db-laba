@@ -76,7 +76,6 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $type = \Yii::$app->request->get('type');
             if (!is_null($type)) {
-                // do somenthing with model
                 $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard);
                 return $this->render('variants', [
                     'type'     => $type,

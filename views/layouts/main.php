@@ -39,14 +39,6 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    /*echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items'   => [
-            ['label' => 'Домашняя страница', 'url' => ['/site/index']],
-            ['label' => 'Тренажер', 'url' => ['/site/training']],
-            ['label' => 'Теория', 'url' => ['/site/theory']],
-        ],
-    ]);*/
     NavBar::end();
     ?>
 
@@ -61,7 +53,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left"><a href="https://github.com/Sergun1a">Sergun1a</a> <?= date('Y') ?></p>
+        <p class="pull-left"><a href="https://github.com/Sergun1a/db-laba">Sergun1a</a> <?= date('Y') ?></p>
     </div>
 </footer>
 

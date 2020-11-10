@@ -3,7 +3,6 @@
 /* @var $type */
 
 $this->title                   = 'Варианты';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="breadcrumb">

@@ -93,7 +93,20 @@ class Question extends ActiveRecord
             return $variants;
         }
         if ($type == self::TEST_TYPE_KR) {
-
+            $questions = Question::find()
+                ->andWhere(['in', 'theme_id', $themes])
+                ->andWhere(['type' => self::TYPE_PRACTICE])
+                ->all();
+            if (sizeof($questions) % 3 == 0) {
+                $variants = self::QuestionsToVariants(3, $questions);
+            } else {
+                if (sizeof($questions) % 2 == 0) {
+                    $variants = self::QuestionsToVariants(2, $questions);
+                } else {
+                    $variants = self::QuestionsToVariants(2, $questions, false);
+                }
+            }
+            return $variants;
         }
         if ($type == self::TEST_TYPE_EKZ) {
 
