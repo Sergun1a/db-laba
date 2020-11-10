@@ -2,7 +2,7 @@
 /* @var $variants */
 /* @var $type */
 
-$this->title                   = 'Варианты';
+$this->title = 'Варианты';
 ?>
 
 <div class="breadcrumb">
@@ -39,7 +39,8 @@ $this->title                   = 'Варианты';
                     <li>
                         <div class="col-md col-12">
                             <p class="pull-left">Тема "<?= \app\models\Question::themesList()[$question->theme_id]; ?>
-                                ", вопрос номер
+                                ", <?= $question->type == \app\models\Question::TYPE_THEORY ? "контрольный вопрос" :
+                                    "практический вопрос"; ?> номер
                                 <?= $question->question_number ?></p>
                         </div>
                     </li>

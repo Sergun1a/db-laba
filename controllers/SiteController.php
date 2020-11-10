@@ -70,11 +70,19 @@ class SiteController extends Controller
      */
     public function actionQuestions()
     {
+        $type = \Yii::$app->request->get('type');
+        if ($type == Question::TEST_TYPE_EKZ) {
+            $questions = Question::prepareQuestions($type, [], false);
+            return $this->render('variants', [
+                'type'     => $type,
+                'variants' => $questions,
+            ]);
+        }
         $model = new DynamicModel(['themes', 'include_hard']);
         $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
             ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
         if ($model->load(Yii::$app->request->post())) {
-            $type = \Yii::$app->request->get('type');
+
             if (!is_null($type)) {
                 $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard);
                 return $this->render('variants', [

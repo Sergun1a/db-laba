@@ -63,6 +63,7 @@ class Question extends ActiveRecord
             $variants[$counter / $divider + 1][] = $question;
             $counter++;
         }
+        // если число вопросов не кратно хотя бы 3, то избавляюсь от последнего варианта, т.к в нем недостаток вопросов
         if (!$rounded_array) {
             unset($variants[--$counter / $divider + 1]);
         }
@@ -109,7 +110,27 @@ class Question extends ActiveRecord
             return $variants;
         }
         if ($type == self::TEST_TYPE_EKZ) {
+            for ($i = 1; $i < 8; $i++) {
+                $first_theme  = $i;
+                $second_theme = $first_theme >= 6 ? $first_theme + 2 - 7 : $first_theme + 2;
+                $third_theme  = $first_theme <= 2 ? 7 - abs($first_theme - 2) : $first_theme - 2;
 
+                $variants[$i][] = self::randomQuestionForTheme($first_theme);
+                $variants[$i][] = self::randomQuestionForTheme($second_theme);
+                $variants[$i][] = self::randomQuestionForTheme($third_theme, self::TYPE_PRACTICE);
+            }
+            return $variants;
         }
+    }
+
+    private static function randomQuestionForTheme($theme, $type = self::TYPE_THEORY)
+    {
+        $questions = Question::find()
+            ->andWhere(['theme_id' => $theme])
+            ->andWhere(['type' => $type])
+            ->all();
+
+        $element = rand(0, sizeof($questions) - 1);
+        return $questions[$element];
     }
 }
