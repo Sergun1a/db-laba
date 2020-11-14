@@ -11,7 +11,7 @@ use dosamigos\multiselect\MultiSelect;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title                   = 'Подготовка';
+$this->title = 'Подготовка';
 ?>
 <div class="site-login">
     <p>Пожалуйста заполните следующие поля:</p>
@@ -30,7 +30,14 @@ $this->title                   = 'Подготовка';
                 'nonSelectedText'        => 'Выберите тему',
             ],
     ])->label("Выберите тему/темы") ?>
-    <?= $form->field($model, 'include_hard')->checkbox()->label("Включать сложные задачи/вопросы") ?>
+    <?php if (\Yii::$app->request->get('type') == \app\models\Question::TEST_TYPE_KR) { ?>
+        <?= $form->field($model, 'include_hard')->checkbox()->label("Включать сложные задачи") ?>
+    <?php } ?>
+    <?php if (\Yii::$app->request->get('type') == \app\models\Question::TEST_TYPE_KR ||
+        \Yii::$app->request->get('type') == \app\models\Question::TEST_TYPE_KOLLOK) { ?>
+        <?= $form->field($model, 'points')->textInput(['style' => 'width:100px'])
+            ->label("Опционально. Количество баллов"); ?>
+    <?php } ?>
     <?= Html::submitButton('Готово', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
 
     <?php ActiveForm::end(); ?>

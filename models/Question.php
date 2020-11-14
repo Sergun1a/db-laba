@@ -70,7 +70,18 @@ class Question extends ActiveRecord
         return $variants;
     }
 
-    public static function prepareQuestions($type, $themes, $include_hard)
+    private static function unsetElement($array, $element)
+    {
+        $new_array = [];
+        foreach ($array as $key => $value) {
+            if ($key != $element) {
+                $new_array[] = $value;
+            }
+        }
+        return $new_array;
+    }
+
+    public static function prepareQuestions($type, $themes, $include_hard, $points)
     {
         $variants = [];
         if ($type == self::TEST_TYPE_KOLLOK) {
@@ -78,17 +89,25 @@ class Question extends ActiveRecord
                 ->andWhere(['in', 'theme_id', $themes])
                 ->andWhere(['type' => self::TYPE_THEORY])
                 ->all();
-            if (sizeof($questions) % 5 == 0) {
-                $variants = self::QuestionsToVariants(5, $questions);
-            } else {
-                if (sizeof($questions) % 4 == 0) {
-                    $variants = self::QuestionsToVariants(4, $questions);
+            if ($points == -1) {
+                if (sizeof($questions) % 5 == 0) {
+                    $variants = self::QuestionsToVariants(5, $questions);
                 } else {
-                    if (sizeof($questions) % 3 == 0) {
-                        $variants = self::QuestionsToVariants(3, $questions);
+                    if (sizeof($questions) % 4 == 0) {
+                        $variants = self::QuestionsToVariants(4, $questions);
                     } else {
-                        $variants = self::QuestionsToVariants(3, $questions, false);
+                        if (sizeof($questions) % 3 == 0) {
+                            $variants = self::QuestionsToVariants(3, $questions);
+                        } else {
+                            $variants = self::QuestionsToVariants(3, $questions, false);
+                        }
                     }
+                }
+            } else {
+                if (sizeof($questions) % $points == 0) {
+                    $variants = self::QuestionsToVariants($points, $questions);
+                } else {
+                    $variants = self::QuestionsToVariants($points, $questions, false);
                 }
             }
             return $variants;
@@ -97,14 +116,41 @@ class Question extends ActiveRecord
             $questions = Question::find()
                 ->andWhere(['in', 'theme_id', $themes])
                 ->andWhere(['type' => self::TYPE_PRACTICE])
+                ->andWhere(['is_hard' => 0])
                 ->all();
-            if (sizeof($questions) % 3 == 0) {
-                $variants = self::QuestionsToVariants(3, $questions);
-            } else {
-                if (sizeof($questions) % 2 == 0) {
-                    $variants = self::QuestionsToVariants(2, $questions);
+            if ($points == -1) {
+                if (sizeof($questions) % 3 == 0) {
+                    $variants = self::QuestionsToVariants(3, $questions);
                 } else {
-                    $variants = self::QuestionsToVariants(2, $questions, false);
+                    if (sizeof($questions) % 2 == 0) {
+                        $variants = self::QuestionsToVariants(2, $questions);
+                    } else {
+                        $variants = self::QuestionsToVariants(2, $questions, false);
+                    }
+                }
+            } else {
+                if (sizeof($questions) % $points == 0) {
+                    $variants = self::QuestionsToVariants($points, $questions);
+                } else {
+                    $variants = self::QuestionsToVariants($points, $questions, false);
+                }
+            }
+            if ($include_hard) {
+                $hard_questions   = Question::find()
+                    ->andWhere(['in', 'theme_id', $themes])
+                    ->andWhere(['type' => self::TYPE_PRACTICE])
+                    ->andWhere(['is_hard' => 1])
+                    ->all();
+                $previous_variant = -1;
+                foreach ($variants as $variant => $question) {
+                    if ($previous_variant != $variant) {
+                        $element = rand(0, sizeof($hard_questions) - 1);
+                        if (!empty($hard_questions[$element])) {
+                            $variants[$variant][] = $hard_questions[$element];
+                            $hard_questions       = self::unsetElement($hard_questions, $element);
+                        }
+                    }
+                    $previous_variant = $variant;
                 }
             }
             return $variants;
