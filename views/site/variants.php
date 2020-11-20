@@ -21,7 +21,7 @@ $this->title = 'Варианты';
                 <?php foreach ($questions as $question) { ?>
                     <li>
                         <div class="col-md col-12">
-                            <span><?= $question->is_hard ? '<sup>&#9913;</sup>' : ''; ?> <?= $question->question ?></span>
+                            <span><?= $question->is_hard && $type != \app\models\Question::TEST_TYPE_EKZ ? '<sup>&#9913;</sup>' : ''; ?> <?= $question->question ?></span>
                         </div>
                     </li>
                 <?php } ?>
