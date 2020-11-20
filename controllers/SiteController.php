@@ -85,6 +85,12 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             if (!is_null($type)) {
                 $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points);
+                if (empty($questions)) {
+                    $model->addError('points','Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшить количество баллов');
+                    return $this->render('setupQuestions', [
+                        'model' => $model,
+                    ]);
+                }
                 return $this->render('variants', [
                     'type'     => $type,
                     'variants' => $questions,
