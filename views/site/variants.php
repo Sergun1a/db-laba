@@ -17,15 +17,15 @@ $this->title = 'Варианты';
     <?php foreach ($variants as $variant => $questions) { ?>
         <div class="row">
             <h2><?= $variant ?> вариант</h2>
-            <ul>
+            <ol>
                 <?php foreach ($questions as $question) { ?>
                     <li>
                         <div class="col-md col-12">
-                            <span><?= $question->question ?></span>
+                            <span><?= $question->is_hard ? '<sup>&#9913;</sup>' : ''; ?> <?= $question->question ?></span>
                         </div>
                     </li>
                 <?php } ?>
-            </ul>
+            </ol>
         </div>
         <hr>
     <?php } ?>
@@ -34,18 +34,23 @@ $this->title = 'Варианты';
     <?php foreach ($variants as $variant => $questions) { ?>
         <div class="row">
             <h2><?= $variant ?> вариант</h2>
-            <ul>
+            <ol>
                 <?php foreach ($questions as $question) { ?>
                     <li>
                         <div class="col-md col-12">
                             <p class="pull-left">Тема "<?= \app\models\Question::themesList()[$question->theme_id]; ?>
                                 ", <?= $question->type == \app\models\Question::TYPE_THEORY ? "контрольный вопрос" :
-                                    "практический вопрос"; ?> номер
+                                    "практический вопрос"; ?>
+                                <?php if (!$question->is_hard) { ?>
+                                номер
                                 <?= $question->question_number ?></p>
+                            <?php } else { ?>
+                                со звездочкой
+                            <?php } ?>
                         </div>
                     </li>
                 <?php } ?>
-            </ul>
+            </ol>
         </div>
         <hr>
     <?php } ?>

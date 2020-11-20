@@ -72,19 +72,25 @@ class SiteController extends Controller
     {
         $type = \Yii::$app->request->get('type');
         if ($type == Question::TEST_TYPE_EKZ) {
-            $questions = Question::prepareQuestions($type, [], false);
+            $questions = Question::prepareQuestions($type, [], false, 0);
             return $this->render('variants', [
                 'type'     => $type,
                 'variants' => $questions,
             ]);
         }
-        $model = new DynamicModel(['themes', 'include_hard']);
+        $model = new DynamicModel(['themes', 'include_hard', 'points']);
         $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
+            ->addRule('points', 'integer', ['min' => 0,'tooSmall'=>'Число должно быть больше 0'], ['message' => 'Значение должно быть целым числом'])
             ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
         if ($model->load(Yii::$app->request->post())) {
-
             if (!is_null($type)) {
-                $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard);
+                $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points);
+                if (empty($questions)) {
+                    $model->addError('points','Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшить количество баллов');
+                    return $this->render('setupQuestions', [
+                        'model' => $model,
+                    ]);
+                }
                 return $this->render('variants', [
                     'type'     => $type,
                     'variants' => $questions,
