@@ -80,7 +80,7 @@ class SiteController extends Controller
         }
         $model = new DynamicModel(['themes', 'include_hard', 'points']);
         $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
-            ->addRule('points', 'integer', ['min' => 0,'tooSmall'=>'Число должно быть больше 0'], ['message' => 'Значение должно быть целым числом'])
+            ->addRule('points', 'integer', ['min' => 0,'tooSmall'=>'Число должно быть больше 0', 'message' => 'Значение должно быть целым числом'])
             ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
         if ($model->load(Yii::$app->request->post())) {
             if (!is_null($type)) {
