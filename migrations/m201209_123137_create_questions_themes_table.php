@@ -10,7 +10,7 @@ class m201209_123137_create_questions_themes_table extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeUp()
+    public function up()
     {
         $this->createTable('{{%questions_themes}}', [
             'question_id'     => $this->primaryKey(11),
@@ -22,7 +22,7 @@ class m201209_123137_create_questions_themes_table extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeDown()
+    public function down()
     {
         $this->dropTable('{{%questions_themes}}');
     }
