@@ -81,12 +81,22 @@ class Question extends ActiveRecord
         return $new_array;
     }
 
+    /**
+     * Return theme linked with question.
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTheme()
+    {
+        return $this->hasOne(QuestionTheme::className(), ['question_id' => 'id']);
+    }
+
     public static function prepareQuestions($type, $themes, $include_hard, $points)
     {
         $variants = [];
         if ($type == self::TEST_TYPE_KOLLOK) {
             $questions = Question::find()
-                ->andWhere(['in', 'theme_id', $themes])
+                ->joinWith('theme')
+                ->andWhere(['in', 'questions_themes.theme_id', $themes])
                 ->andWhere(['type' => self::TYPE_THEORY])
                 ->all();
             if ($points == -1) {
@@ -114,7 +124,8 @@ class Question extends ActiveRecord
         }
         if ($type == self::TEST_TYPE_KR) {
             $questions = Question::find()
-                ->andWhere(['in', 'theme_id', $themes])
+                ->joinWith('theme')
+                ->andWhere(['in', 'questions_themes.theme_id', $themes])
                 ->andWhere(['type' => self::TYPE_PRACTICE])
                 ->andWhere(['is_hard' => 0])
                 ->all();
@@ -137,7 +148,8 @@ class Question extends ActiveRecord
             }
             if ($include_hard) {
                 $hard_questions   = Question::find()
-                    ->andWhere(['in', 'theme_id', $themes])
+                    ->joinWith('theme')
+                    ->andWhere(['in', 'questions_themes.theme_id', $themes])
                     ->andWhere(['type' => self::TYPE_PRACTICE])
                     ->andWhere(['is_hard' => 1])
                     ->all();
@@ -172,7 +184,8 @@ class Question extends ActiveRecord
     private static function randomQuestionForTheme($theme, $type = self::TYPE_THEORY)
     {
         $questions = Question::find()
-            ->andWhere(['theme_id' => $theme])
+            ->joinWith('theme')
+            ->andWhere(['questions_themes.theme_id' => $theme])
             ->andWhere(['type' => $type])
             ->all();
 

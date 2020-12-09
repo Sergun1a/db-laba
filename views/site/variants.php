@@ -38,12 +38,12 @@ $this->title = 'Варианты';
                 <?php foreach ($questions as $question) { ?>
                     <li>
                         <div class="col-md col-12">
-                            <p class="pull-left">Тема "<?= \app\models\Question::themesList()[$question->theme_id]; ?>
+                            <p class="pull-left">Тема "<?= \app\models\Question::themesList()[$question->theme->theme_id]; ?>
                                 ", <?= $question->type == \app\models\Question::TYPE_THEORY ? "контрольный вопрос" :
                                     "практический вопрос"; ?>
                                 <?php if (!$question->is_hard) { ?>
                                 номер
-                                <?= $question->question_number ?></p>
+                                <?= $question->theme->question_number ?></p>
                             <?php } else { ?>
                                 со звездочкой
                             <?php } ?>
