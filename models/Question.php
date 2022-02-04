@@ -20,6 +20,45 @@ class Question extends ActiveRecord
     const TEST_TYPE_KOLLOK = 'kollok';
     const TEST_TYPE_KR     = 'kr';
     const TEST_TYPE_EKZ    = 'ekz';
+    // константы тестового задания
+    // закрытые типы заданий
+    const ALTERNATIVE_CHOICE = "alternative";
+    const MAPPING            = "mapping";
+    const MULTIPLE_CHOICE    = "multiple";
+    const SEQUENCE           = "sequence";
+    // открытые типы заданий
+    const ADDITION  = "addition";
+    const FREE_FORM = "free";
+
+    public static function closeTestingTypeList()
+    {
+        return [
+            1 => self::ALTERNATIVE_CHOICE,
+            2 => self::MAPPING,
+            3 => self::MULTIPLE_CHOICE,
+            4 => self::SEQUENCE,
+        ];
+    }
+
+    public static function openTestingTypesList()
+    {
+        return [
+            self::ADDITION,
+            self::FREE_FORM,
+        ];
+    }
+
+    public static function testingTypesList()
+    {
+        return [
+            1 => self::ALTERNATIVE_CHOICE,
+            2 => self::MAPPING,
+            3 => self::MULTIPLE_CHOICE,
+            4 => self::SEQUENCE,
+            5 => self::ADDITION,
+            6 => self::FREE_FORM,
+        ];
+    }
 
     public static function themesList()
     {
