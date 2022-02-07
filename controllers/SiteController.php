@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Question;
+use app\models\User;
 use Yii;
 use yii\base\DynamicModel;
 use yii\filters\AccessControl;
@@ -22,9 +23,14 @@ class SiteController extends Controller
                 'only'  => ['questions'],
                 'rules' => [
                     [
-                        'actions' => ['questions'],
+                        'actions' => ['questions', 'login'],
                         'allow'   => true,
                         'roles'   => ['?', '@'],
+                    ],
+                    [
+                        'actions' => ['admin'],
+                        'allow'   => true,
+                        'roles'   => ['@'],
                     ],
                 ],
             ],
@@ -80,13 +86,13 @@ class SiteController extends Controller
         }
         $model = new DynamicModel(['themes', 'include_hard', 'points']);
         $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
-            ->addRule('points', 'integer', ['min' => 0,'tooSmall'=>'Число должно быть больше 0', 'message' => 'Значение должно быть целым числом'])
+            ->addRule('points', 'integer', ['min' => 0, 'tooSmall' => 'Число должно быть больше 0', 'message' => 'Значение должно быть целым числом'])
             ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
         if ($model->load(Yii::$app->request->post())) {
             if (!is_null($type)) {
                 $questions = Question::prepareQuestions($type, $model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points);
                 if (empty($questions)) {
-                    $model->addError('points','Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
+                    $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
                     return $this->render('setupQuestions', [
                         'model' => $model,
                     ]);
@@ -98,6 +104,27 @@ class SiteController extends Controller
             }
         }
         return $this->render('setupQuestions', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionLogin()
+    {
+        $model = new User();
+        if ($model->load(Yii::$app->request->post())) {
+            $user = User::findOne(['login' => $model->login]);
+            if (empty($user)) {
+                $model->addError('login', 'Пользователь с таким логином не обнаружен');
+            } else {
+                if (!Yii::$app->security->validatePassword($model->password, $user->password)) {
+                    $model->addError('password', 'Неверный пароль');
+                } else {
+                    Yii::$app->user->login($user);
+                    return $this->redirect('site/admin');
+                }
+            }
+        }
+        return $this->render('login', [
             'model' => $model,
         ]);
     }
