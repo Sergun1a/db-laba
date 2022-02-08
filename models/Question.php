@@ -60,6 +60,27 @@ class Question extends ActiveRecord
         ];
     }
 
+    public static function humanTestingType($type = null)
+    {
+        $types = [
+            self::ALTERNATIVE_CHOICE => 'альтернативный выбор',
+            self::MAPPING            => 'установление соответствия',
+            self::MULTIPLE_CHOICE    => 'множественный выбор',
+            self::SEQUENCE           => 'установление последовательности',
+            self::ADDITION           => 'дополнение',
+            self::FREE_FORM          => 'свободное изложение',
+        ];
+
+        if (is_null($type)) {
+            return $types;
+        }
+
+        if (!empty($types[$type])) {
+            return $types[$type];
+        }
+        return null;
+    }
+
     public static function themesList()
     {
         return [

@@ -113,3 +113,12 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+
+.panel-return-button {
+    margin-top: 10px;
+}
+
+.question-create-button {
+    margin-bottom: 10px;
+}

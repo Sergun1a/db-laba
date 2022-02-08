@@ -3,11 +3,15 @@
 namespace app\controllers;
 
 use app\models\Question;
+use app\models\QuestionContent;
 use app\models\User;
+use Codeception\PHPUnit\Constraint\Page;
 use Yii;
 use yii\base\DynamicModel;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -28,7 +32,7 @@ class SiteController extends Controller
                         'roles'   => ['?', '@'],
                     ],
                     [
-                        'actions' => ['admin'],
+                        'actions' => ['admin', 'update', 'delete'],
                         'allow'   => true,
                         'roles'   => ['@'],
                     ],
@@ -112,7 +116,10 @@ class SiteController extends Controller
     {
         $model = new User();
         if ($model->load(Yii::$app->request->post())) {
-            $user = User::findOne(['login' => $model->login]);
+            $user = User::findOne([
+                'login'  => $model->login,
+                'status' => User::STATUS_ACTIVE,
+            ]);
             if (empty($user)) {
                 $model->addError('login', 'Пользователь с таким логином не обнаружен');
             } else {
@@ -120,12 +127,52 @@ class SiteController extends Controller
                     $model->addError('password', 'Неверный пароль');
                 } else {
                     Yii::$app->user->login($user);
-                    return $this->redirect('site/admin');
+                    return $this->redirect(Url::toRoute('site/admin'));
                 }
             }
         }
         return $this->render('login', [
             'model' => $model,
         ]);
+    }
+
+    public function actionAdmin()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query'      => QuestionContent::find(),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+        return $this->render('grid', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionUpdate()
+    {
+        $questionId = Yii::$app->request->get('id');
+        if (!empty($questionId)) {
+            $question = QuestionContent::findOne(['question_id' => $questionId]);
+        } else {
+            $question = new QuestionContent();
+        }
+        if ($question->load(Yii::$app->request->post())) {
+            $question->save();
+        }
+        return $this->render('form', [
+            'model' => $question,
+        ]);
+    }
+
+    public function actionDelete()
+    {
+        $questionId = Yii::$app->request->get('id');
+        $question   = QuestionContent::findOne(['question_id' => $questionId]);
+        if (!empty($question)) {
+            $question->delete();
+        }
+        return $this->redirect(Url::toRoute('site/admin'));
     }
 }

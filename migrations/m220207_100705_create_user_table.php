@@ -17,7 +17,7 @@ class m220207_100705_create_user_table extends Migration
             'login'    => $this->string(),
             'password' => $this->string(),
             'auth_key' => $this->string(),
-            'status'   => $this->string()->defaultValue('active'),
+            'status'   => $this->string()->defaultValue(\app\models\User::STATUS_ACTIVE),
         ]);
 
         $adminUser = new \app\models\User([

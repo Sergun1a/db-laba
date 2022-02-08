@@ -13,12 +13,12 @@ class m220204_145059_add_questions_content_table extends Migration
     public function safeUp()
     {
         $this->createTable('questions_content', [
-            'question_id'    => $this->integer(11),
+            'question_id'    => $this->primaryKey(),
             'testing_type'   => $this->string()->defaultValue(\app\models\Question::FREE_FORM),
             'content'        => $this->text(),
-            'answer_options' => $this->text()->defaultValue(\yii\helpers\Json::encode([])),
+            'answer_options1' => $this->text(),
+            'answer_options2' => $this->text(),
         ]);
-        $this->addPrimaryKey('contentPK','questions_content',['question_id','testing_type']);
         $questions = \app\models\Question::find()->all();
 
         foreach ($questions as $question) {

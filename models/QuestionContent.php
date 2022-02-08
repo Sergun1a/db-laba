@@ -12,7 +12,8 @@ use yii\helpers\Json;
  * @property int    $question_id
  * @property string $content
  * @property string $testing_type
- * @property json   $answer_options
+ * @property json   $answer_options1
+ * @property json   $answer_options2
  */
 class QuestionContent extends ActiveRecord
 {
@@ -33,20 +34,25 @@ class QuestionContent extends ActiveRecord
             [['question_id'], 'integer'],
             [['content'], 'string'],
             [['testing_type'], 'in', 'range' => Question::testingTypesList(), 'message' => 'Недопустимый тип тестового задания'],
-            [['answer_options'], 'validateJSON'],
+            [['answer_options1', 'answer_options2'], 'validateAnswers'],
         ];
     }
 
-    public function validateJSON($attribute, $params)
+    public function attributeLabels()
+    {
+        return [
+            'content' => 'Содержание вопроса',
+        ];
+    }
+
+    public function validateAnswers($attribute, $params)
     {
         if (in_array($this->testing_type, Question::closeTestingTypeList())) {
             try {
-                Json::decode($this->$attribute);
+                Json::encode($this->$attribute);
             } catch (\yii\base\InvalidArgumentException $ex) {
                 $this->addError($attribute, "Недопустимый формат вариантов ответа");
             }
-        } else {
-            $this->$attribute = Json::encode([]);
         }
     }
 }
