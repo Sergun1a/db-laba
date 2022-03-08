@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Question;
 use app\models\QuestionContent;
+use app\models\QuestionTheme;
 use app\models\User;
 use Codeception\PHPUnit\Constraint\Page;
 use Yii;
@@ -24,22 +25,22 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['questions'],
+                'only' => ['questions'],
                 'rules' => [
                     [
                         'actions' => ['questions', 'login'],
-                        'allow'   => true,
-                        'roles'   => ['?', '@'],
+                        'allow' => true,
+                        'roles' => ['?', '@'],
                     ],
                     [
                         'actions' => ['admin', 'update', 'delete'],
-                        'allow'   => true,
-                        'roles'   => ['@'],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
             ],
-            'verbs'  => [
-                'class'   => VerbFilter::className(),
+            'verbs' => [
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -53,11 +54,11 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error'   => [
+            'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
             'captcha' => [
-                'class'           => 'yii\captcha\CaptchaAction',
+                'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
@@ -81,13 +82,6 @@ class SiteController extends Controller
     public function actionQuestions()
     {
         $type = \Yii::$app->request->get('type');
-        if ($type == Question::TEST_TYPE_EKZ) {
-            $questions = Question::prepareQuestions($type, [], false, 0);
-            return $this->render('variants', [
-                'type'     => $type,
-                'variants' => $questions,
-            ]);
-        }
         $model = new DynamicModel(['themes', 'include_hard', 'points']);
         $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
             ->addRule('points', 'integer', ['min' => 0, 'tooSmall' => 'Число должно быть больше 0', 'message' => 'Значение должно быть целым числом'])
@@ -102,7 +96,7 @@ class SiteController extends Controller
                     ]);
                 }
                 return $this->render('variants', [
-                    'type'     => $type,
+                    'type' => $type,
                     'variants' => $questions,
                 ]);
             }
@@ -117,7 +111,7 @@ class SiteController extends Controller
         $model = new User();
         if ($model->load(Yii::$app->request->post())) {
             $user = User::findOne([
-                'login'  => $model->login,
+                'login' => $model->login,
                 'status' => User::STATUS_ACTIVE,
             ]);
             if (empty($user)) {
@@ -139,7 +133,7 @@ class SiteController extends Controller
     public function actionAdmin()
     {
         $dataProvider = new ActiveDataProvider([
-            'query'      => QuestionContent::find(),
+            'query' => QuestionContent::find(),
             'pagination' => [
                 'pageSize' => 20,
             ],
@@ -154,22 +148,43 @@ class SiteController extends Controller
     {
         $questionId = Yii::$app->request->get('id');
         if (!empty($questionId)) {
-            $question = QuestionContent::findOne(['question_id' => $questionId]);
+            $questionContent = QuestionContent::findOne(['question_id' => $questionId]);
+            $question = Question::findOne(['id' => $questionId]);
+            $questionTheme = QuestionTheme::findOne(['question_id' => $questionId]);
+
         } else {
-            $question = new QuestionContent();
+            $questionContent = new QuestionContent();
+            $question = new Question();
+            $questionTheme = new QuestionTheme();
         }
         if ($question->load(Yii::$app->request->post())) {
             $question->save();
         }
+        if ($questionContent->load(Yii::$app->request->post())) {
+            $questionContent->save();
+        }
+        if ($questionTheme->load(Yii::$app->request->post())) {
+            $questionTheme->save();
+        }
         return $this->render('form', [
-            'model' => $question,
+            'questionContent' => $questionContent,
+            'question' => $question,
+            'questionTheme' => $questionTheme,
         ]);
     }
 
     public function actionDelete()
     {
         $questionId = Yii::$app->request->get('id');
-        $question   = QuestionContent::findOne(['question_id' => $questionId]);
+        $questionContent = QuestionContent::findOne(['question_id' => $questionId]);
+        $question = Question::findOne(['id' => $questionId]);
+        $questionTheme = QuestionTheme::findOne(['question_id' => $questionId]);
+        if (!empty($questionContent)) {
+            $questionContent->delete();
+        }
+        if (!empty($questionTheme)) {
+            $questionTheme->delete();
+        }
         if (!empty($question)) {
             $question->delete();
         }

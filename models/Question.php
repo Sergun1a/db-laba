@@ -8,26 +8,24 @@ use yii\db\ActiveRecord;
  * This is the model class for table "questions".
  *
  * @property integer $id
- * @property string  $question
- * @property int     $theme_id
- * @property string  $type
+ * @property string $type
  * @property boolean $is_hard
  **/
 class Question extends ActiveRecord
 {
-    const TYPE_THEORY      = 'theory';
-    const TYPE_PRACTICE    = 'practice';
+    const TYPE_THEORY = 'theory';
+    const TYPE_PRACTICE = 'practice';
     const TEST_TYPE_KOLLOK = 'kollok';
-    const TEST_TYPE_KR     = 'kr';
-    const TEST_TYPE_EKZ    = 'ekz';
+    const TEST_TYPE_KR = 'kr';
+    const TEST_TYPE_EKZ = 'ekz';
     // константы тестового задания
     // закрытые типы заданий
     const ALTERNATIVE_CHOICE = "alternative";
-    const MAPPING            = "mapping";
-    const MULTIPLE_CHOICE    = "multiple";
-    const SEQUENCE           = "sequence";
+    const MAPPING = "mapping";
+    const MULTIPLE_CHOICE = "multiple";
+    const SEQUENCE = "sequence";
     // открытые типы заданий
-    const ADDITION  = "addition";
+    const ADDITION = "addition";
     const FREE_FORM = "free";
 
     public static function closeTestingTypeList()
@@ -64,11 +62,11 @@ class Question extends ActiveRecord
     {
         $types = [
             self::ALTERNATIVE_CHOICE => 'альтернативный выбор',
-            self::MAPPING            => 'установление соответствия',
-            self::MULTIPLE_CHOICE    => 'множественный выбор',
-            self::SEQUENCE           => 'установление последовательности',
-            self::ADDITION           => 'дополнение',
-            self::FREE_FORM          => 'свободное изложение',
+            self::MAPPING => 'установление соответствия',
+            self::MULTIPLE_CHOICE => 'множественный выбор',
+            self::SEQUENCE => 'установление последовательности',
+            self::ADDITION => 'дополнение',
+            self::FREE_FORM => 'свободное изложение',
         ];
 
         if (is_null($type)) {
@@ -108,15 +106,15 @@ class Question extends ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'theme_id'], 'integer'],
-            [['question', 'type'], 'string'],
+            [['id'], 'integer'],
+            [['type'], 'string'],
             [['is_hard'], 'boolean'],
         ];
     }
 
     private static function QuestionsToVariants($divider, $questions, $rounded_array = true)
     {
-        $counter  = 0;
+        $counter = 0;
         $variants = [];
         shuffle($questions);
         foreach ($questions as $question) {
@@ -149,6 +147,14 @@ class Question extends ActiveRecord
     {
         return $this->hasOne(QuestionTheme::className(), ['question_id' => 'id']);
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'is_hard' => 'Вопрос со звездочкой',
+        ];
+    }
+
 
     public static function prepareQuestions($type, $themes, $include_hard, $points)
     {
@@ -207,7 +213,7 @@ class Question extends ActiveRecord
                 }
             }
             if ($include_hard) {
-                $hard_questions   = Question::find()
+                $hard_questions = Question::find()
                     ->joinWith('theme')
                     ->andWhere(['in', 'questions_themes.theme_id', $themes])
                     ->andWhere(['type' => self::TYPE_PRACTICE])
@@ -219,7 +225,7 @@ class Question extends ActiveRecord
                         $element = rand(0, sizeof($hard_questions) - 1);
                         if (!empty($hard_questions[$element])) {
                             $variants[$variant][] = $hard_questions[$element];
-                            $hard_questions       = self::unsetElement($hard_questions, $element);
+                            $hard_questions = self::unsetElement($hard_questions, $element);
                         }
                     }
                     $previous_variant = $variant;
@@ -229,9 +235,9 @@ class Question extends ActiveRecord
         }
         if ($type == self::TEST_TYPE_EKZ) {
             for ($i = 1; $i < 8; $i++) {
-                $first_theme  = $i;
+                $first_theme = $i;
                 $second_theme = $first_theme >= 6 ? $first_theme + 2 - 7 : $first_theme + 2;
-                $third_theme  = $first_theme <= 2 ? 7 - abs($first_theme - 2) : $first_theme - 2;
+                $third_theme = $first_theme <= 2 ? 7 - abs($first_theme - 2) : $first_theme - 2;
 
                 $variants[$i][] = self::randomQuestionForTheme($first_theme);
                 $variants[$i][] = self::randomQuestionForTheme($second_theme);

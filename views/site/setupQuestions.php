@@ -19,25 +19,22 @@ $this->title = 'Подготовка';
         'id' => 'question-form',
     ]); ?>
     <?= $form->field($model, 'themes')->widget(MultiSelect::className(), [
-        "options"       => ['multiple' => "multiple"],
-        'data'          => \app\models\Question::themesList(),
+        "options" => ['multiple' => "multiple"],
+        'data' => \app\models\Question::themesList(),
         "clientOptions" =>
             [
                 "includeSelectAllOption" => true,
-                'allSelectedText'        => "Выбрать все",
-                'selectAllText'          => "Выбрать все",
-                'nSelectedText'          => 'Выбрано',
-                'nonSelectedText'        => 'Выберите тему',
+                'allSelectedText' => "Выбрать все",
+                'selectAllText' => "Выбрать все",
+                'nSelectedText' => 'Выбрано',
+                'nonSelectedText' => 'Выберите тему',
             ],
     ])->label("Выберите тему/темы") ?>
     <?php if (\Yii::$app->request->get('type') == \app\models\Question::TEST_TYPE_KR) { ?>
         <?= $form->field($model, 'include_hard')->checkbox()->label("Включать сложные задачи") ?>
     <?php } ?>
-    <?php if (\Yii::$app->request->get('type') == \app\models\Question::TEST_TYPE_KR ||
-        \Yii::$app->request->get('type') == \app\models\Question::TEST_TYPE_KOLLOK) { ?>
-        <?= $form->field($model, 'points')->textInput(['style' => 'width:100px'])
-            ->label("Опционально. Количество баллов"); ?>
-    <?php } ?>
+    <?= $form->field($model, 'points')->textInput(['style' => 'width:100px'])
+        ->label("Опционально. Количество баллов"); ?>
     <?= Html::submitButton('Готово', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
 
     <?php ActiveForm::end(); ?>
