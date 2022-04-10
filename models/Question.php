@@ -156,7 +156,7 @@ class Question extends ActiveRecord
     }
 
 
-    public static function prepareQuestions($type, $themes, $include_hard, $points)
+    public static function prepareQuestions($themes, $include_hard, $points, $allowedTestingType)
     {
         $variants = [];
         $questions = Question::find()
