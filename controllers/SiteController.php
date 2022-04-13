@@ -87,54 +87,58 @@ class SiteController extends Controller
      */
     public function actionQuestions()
     {
-        $cache = Yii::$app->cache;
-        $type = \Yii::$app->request->get('type');
-        $model = new DynamicModel(['themes', 'include_hard', 'points']);
-        $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
-            ->addRule('points', 'integer', ['min' => 0, 'tooSmall' => 'Число должно быть больше 0', 'message' => 'Значение должно быть целым числом'])
-            ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
-        if ($model->load(Yii::$app->request->post())) {
-            if ($cache->get('status') == 'testing_type') {
-                $model->themes = $cache->get('themes');
-                $model->points = $cache->get('points');
-            } else {
-                $cache->set('status', 'themes');
-                $cache->set('themes', $model->themes);
-                $cache->set('points', $model->points);
-            }
+        try {
+            $cache = Yii::$app->cache;
+            $type = \Yii::$app->request->get('type');
+            $model = new DynamicModel(['themes', 'include_hard', 'points']);
+            $model->addRule('themes', 'safe')->addRule('include_hard', 'boolean')
+                ->addRule('points', 'integer', ['min' => 0, 'tooSmall' => 'Число должно быть больше 0', 'message' => 'Значение должно быть целым числом'])
+                ->addRule('themes', 'required', ['message' => 'Пожалуйста выберите хотя бы одну тему']);
+            if ($model->load(Yii::$app->request->post())) {
+                if ($cache->get('status') == 'testing_type') {
+                    $model->themes = $cache->get('themes');
+                    $model->points = $cache->get('points');
+                } else {
+                    $cache->set('status', 'themes');
+                    $cache->set('themes', $model->themes);
+                    $cache->set('points', $model->points);
+                }
 
-            $specifyModelFields = [];
-            $specifyModelValues = [];
-            foreach ($model->themes as $theme) {
-                $specifyModelFields[] = 'theme_' . $theme;
-                $specifyModelValues['theme_' . $theme] = Question::testingTypesList();
-            }
-            $specifyModel = new DynamicModel($specifyModelFields);
-            $specifyModel->addRule($specifyModelFields, 'safe');
-            $specifyModel->setAttributes($specifyModelValues);
-            if ($cache->get('status') == 'testing_type' && $specifyModel->load(Yii::$app->request->post())) {
-                $questions = Question::prepareQuestions($model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points, $specifyModel->getAttributes());
-                Yii::$app->cache->flush();
-                if (empty($questions)) {
-                    $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
-                    return $this->render('setupQuestions', [
-                        'model' => $model,
+                $specifyModelFields = [];
+                $specifyModelValues = [];
+                foreach ($model->themes as $theme) {
+                    $specifyModelFields[] = 'theme_' . $theme;
+                    $specifyModelValues['theme_' . $theme] = Question::testingTypesList();
+                }
+                $specifyModel = new DynamicModel($specifyModelFields);
+                $specifyModel->addRule($specifyModelFields, 'safe');
+                $specifyModel->setAttributes($specifyModelValues);
+                if ($cache->get('status') == 'testing_type' && $specifyModel->load(Yii::$app->request->post())) {
+                    $questions = Question::prepareQuestions($model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points, $specifyModel->getAttributes());
+                    Yii::$app->cache->flush();
+                    if (empty($questions)) {
+                        $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
+                        return $this->render('setupQuestions', [
+                            'model' => $model,
+                        ]);
+                    }
+                    return $this->render('variants', [
+                        'type' => $type,
+                        'variants' => $questions,
                     ]);
                 }
-                return $this->render('variants', [
-                    'type' => $type,
-                    'variants' => $questions,
+                $cache->set('status', 'testing_type');
+                return $this->render('specifyTestingType', [
+                    'setupModel' => $model,
+                    'model' => $specifyModel,
                 ]);
             }
-            $cache->set('status', 'testing_type');
-            return $this->render('specifyTestingType', [
-                'setupModel' => $model,
-                'model' => $specifyModel,
+            return $this->render('setupQuestions', [
+                'model' => $model,
             ]);
+        } catch (\yii\base\ErrorException $ex) {
+            return $this->redirect(Url::toRoute('site/questions'));
         }
-        return $this->render('setupQuestions', [
-            'model' => $model,
-        ]);
     }
 
     public function actionLogin()

@@ -26,7 +26,7 @@ $this->title = 'Варианты';
                         <div class="col-md col-12">
                             <span><?= $question->is_hard ? '<sup>&#9913;</sup>' : ''; ?> <?= $question->content->content ?></span>
                             <?php if (in_array($question->content->testing_type, \app\models\Question::closeTestingTypeList())) { ?>
-                                <?php foreach (explode(',', $question->content->answer_options1) as $key => $option) { ?>
+                                <?php foreach (explode(';', $question->content->answer_options1) as $key => $option) { ?>
                                     <div class="row">
                                         <div class="col-md-6 col-lg-6"><?= $key + 1 . ') ' . trim($option) ?></div>
                                         <?php if ($question->content->testing_type == \app\models\Question::MAPPING) {

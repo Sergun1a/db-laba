@@ -23,7 +23,7 @@ $this->title = "Создание/Редактирование вопроса";
     ->dropDownList(Question::humanTestingType())
     ->label("Тип тестового задания") ?>
 <?= $form->field($questionContent, 'content')->textarea()->label("Содержание вопроса") ?>
-<?= $form->field($questionContent, 'answer_options1')->textarea(['rows' => 1])->label("Варианты ответа (через запятую)") ?>
+<?= $form->field($questionContent, 'answer_options1')->textarea(['rows' => 1])->label("Варианты ответа (через точку с запятой)") ?>
 <?= $form->field($questionContent, 'answer_options2')->textarea(['rows' => 1])
     ->label("Варианты ответа 2 (с чем устанавливать соответствия) (через запятую)") ?>
 <br>
