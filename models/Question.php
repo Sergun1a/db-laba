@@ -112,14 +112,16 @@ class Question extends ActiveRecord
         ];
     }
 
-    private static function QuestionsToVariants($divider, $questions, $rounded_array = true)
+    private static function QuestionsToVariants($allowedTestingTypes, $divider, $questions, $rounded_array = true)
     {
         $counter = 0;
         $variants = [];
         shuffle($questions);
         foreach ($questions as $question) {
-            $variants[$counter / $divider + 1][] = $question;
-            $counter++;
+            if (in_array($question->content->testing_type, $allowedTestingTypes['theme_' . $question->theme->theme_id])) {
+                $variants[$counter / $divider + 1][] = $question;
+                $counter++;
+            }
         }
         // если число вопросов не кратно divider, то избавляюсь от последнего варианта, т.к в нем недостаток вопросов
         if (!$rounded_array) {
@@ -161,25 +163,25 @@ class Question extends ActiveRecord
         $variants = [];
         $questions = Question::find()
             ->joinWith('theme')
+            ->joinWith('content')
             ->andWhere(['in', 'questions_themes.theme_id', $themes])
-            /*->andWhere(['type' => self::TYPE_PRACTICE])*/
             ->andWhere(['is_hard' => 0])
             ->all();
         if ($points == -1) {
             if (sizeof($questions) % 3 == 0) {
-                $variants = self::QuestionsToVariants(3, $questions);
+                $variants = self::QuestionsToVariants($allowedTestingType, 3, $questions);
             } else {
                 if (sizeof($questions) % 2 == 0) {
-                    $variants = self::QuestionsToVariants(2, $questions);
+                    $variants = self::QuestionsToVariants($allowedTestingType, 2, $questions);
                 } else {
-                    $variants = self::QuestionsToVariants(2, $questions, false);
+                    $variants = self::QuestionsToVariants($allowedTestingType, 2, $questions, false);
                 }
             }
         } else {
             if (sizeof($questions) % $points == 0) {
-                $variants = self::QuestionsToVariants($points, $questions);
+                $variants = self::QuestionsToVariants($allowedTestingType, $points, $questions);
             } else {
-                $variants = self::QuestionsToVariants($points, $questions, false);
+                $variants = self::QuestionsToVariants($allowedTestingType, $points, $questions, false);
             }
         }
         if ($include_hard) {

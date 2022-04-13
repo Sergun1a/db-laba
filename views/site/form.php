@@ -31,8 +31,9 @@ $this->title = "Создание/Редактирование вопроса";
     ->dropDownList(Question::themesList())
     ->label("Выберите тему вопроса") ?>
 <br>
+<!--
 <?= $form->field($question, 'is_hard')->checkbox() ?>
-
+-->
 
 
 <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary', 'name' => 'submit-button']) ?>

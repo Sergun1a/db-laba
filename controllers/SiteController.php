@@ -114,13 +114,13 @@ class SiteController extends Controller
             $specifyModel->setAttributes($specifyModelValues);
             if ($cache->get('status') == 'testing_type' && $specifyModel->load(Yii::$app->request->post())) {
                 $questions = Question::prepareQuestions($model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points, $specifyModel->getAttributes());
+                Yii::$app->cache->flush();
                 if (empty($questions)) {
                     $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
                     return $this->render('setupQuestions', [
                         'model' => $model,
                     ]);
                 }
-                Yii::$app->cache->flush();
                 return $this->render('variants', [
                     'type' => $type,
                     'variants' => $questions,
