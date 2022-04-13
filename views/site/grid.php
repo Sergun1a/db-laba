@@ -10,7 +10,7 @@ use yii\helpers\Url;
 
 $this->title = 'Панель редактирования'
 ?>
-<?= Html::a('Создать новое задание', Url::toRoute('site/update'), ['class' => 'btn btn-success question-create-button']); ?>
+<?= Html::a('Создать новое задание', Url::toRoute('site/create'), ['class' => 'btn btn-success question-create-button']); ?>
 <?php
 echo GridView::widget([
     'dataProvider' => $dataProvider,

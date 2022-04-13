@@ -19,7 +19,7 @@ $this->title = 'Уточнение разрешенных типов тесто�
     <?php foreach ($setupModel->themes as $theme) { ?>
         <div>
             <p><b><?= \app\models\Question::themesList()[$theme] ?></b></p>
-            <?= $form->field($model, 'theme_'.$theme)->inline(true)->checkboxList(\app\models\Question::humanTestingType(), ['checked' => 'checked'])->label(false)?>
+            <?= $form->field($model, 'theme_'.$theme)->inline(true)->checkboxList(\app\models\Question::availableTestingTypes($theme), ['checked' => 'checked'])->label(false)?>
         </div>
     <?php } ?>
     <?= Html::submitButton('Готово', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>

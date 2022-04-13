@@ -33,7 +33,7 @@ class SiteController extends Controller
                         'roles' => ['?', '@'],
                     ],
                     [
-                        'actions' => ['admin', 'update', 'delete'],
+                        'actions' => ['admin', 'update', 'delete', 'create'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -74,12 +74,6 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-    public function actionTestingType()
-    {
-
-    }
-
-
     /**
      * Question action.
      *
@@ -108,14 +102,14 @@ class SiteController extends Controller
                 $specifyModelValues = [];
                 foreach ($model->themes as $theme) {
                     $specifyModelFields[] = 'theme_' . $theme;
-                    $specifyModelValues['theme_' . $theme] = Question::testingTypesList();
+                    $specifyModelValues['theme_' . $theme] = Question::specifyTestingTypesList();
                 }
                 $specifyModel = new DynamicModel($specifyModelFields);
                 $specifyModel->addRule($specifyModelFields, 'safe');
                 $specifyModel->setAttributes($specifyModelValues);
                 if ($cache->get('status') == 'testing_type' && $specifyModel->load(Yii::$app->request->post())) {
                     $questions = Question::prepareQuestions($model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points, $specifyModel->getAttributes());
-                    Yii::$app->cache->flush();
+                    $cache->flush();
                     if (empty($questions)) {
                         $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
                         return $this->render('setupQuestions', [
@@ -137,6 +131,8 @@ class SiteController extends Controller
                 'model' => $model,
             ]);
         } catch (\yii\base\ErrorException $ex) {
+            var_dump($ex);
+            $cache->flush();
             return $this->redirect(Url::toRoute('site/questions'));
         }
     }
@@ -179,6 +175,33 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionCreate()
+    {
+        $questionContent = new QuestionContent();
+        $question = new Question();
+        $questionTheme = new QuestionTheme();
+        $resQ = false;
+        $resC = false;
+        $resT = false;
+        if ($question->load(Yii::$app->request->post())) {
+            $resQ = $question->save();
+        }
+        if ($questionContent->load(Yii::$app->request->post())) {
+            $resC = $questionContent->save();
+        }
+        if ($questionTheme->load(Yii::$app->request->post())) {
+            $resT = $questionTheme->save();
+        }
+        if ($resQ && $resC && $resT) {
+            return $this->redirect(Url::toRoute(['site/update', 'id' => $question->id]));
+        }
+        return $this->render('form', [
+            'questionContent' => $questionContent,
+            'question' => $question,
+            'questionTheme' => $questionTheme,
+        ]);
+    }
+
     public function actionUpdate()
     {
         $questionId = Yii::$app->request->get('id');
@@ -186,11 +209,8 @@ class SiteController extends Controller
             $questionContent = QuestionContent::findOne(['question_id' => $questionId]);
             $question = Question::findOne(['id' => $questionId]);
             $questionTheme = QuestionTheme::findOne(['question_id' => $questionId]);
-
         } else {
-            $questionContent = new QuestionContent();
-            $question = new Question();
-            $questionTheme = new QuestionTheme();
+            return $this->redirect(Url::toRoute('site/admin'));
         }
         if ($question->load(Yii::$app->request->post())) {
             $question->save();

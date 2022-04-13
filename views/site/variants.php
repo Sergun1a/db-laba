@@ -3,6 +3,7 @@
 /* @var $type */
 
 $this->title = 'Варианты';
+Yii::$app->cache->flush();
 ?>
 
 <div class="breadcrumb">

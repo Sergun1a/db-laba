@@ -58,6 +58,18 @@ class Question extends ActiveRecord
         ];
     }
 
+    public static function specifyTestingTypesList()
+    {
+        return [
+            self::ALTERNATIVE_CHOICE => self::ALTERNATIVE_CHOICE,
+            self::MAPPING => self::MAPPING,
+            self::MULTIPLE_CHOICE => self::MULTIPLE_CHOICE,
+            self::SEQUENCE => self::SEQUENCE,
+            self::ADDITION => self::ADDITION,
+            self::FREE_FORM => self::FREE_FORM,
+        ];
+    }
+
     public static function humanTestingType($type = null)
     {
         $types = [
@@ -118,7 +130,9 @@ class Question extends ActiveRecord
         $variants = [];
         shuffle($questions);
         foreach ($questions as $question) {
-            if (in_array($question->content->testing_type, $allowedTestingTypes['theme_' . $question->theme->theme_id])) {
+            if ((is_array($allowedTestingTypes['theme_' . $question->theme->theme_id]) &&
+                    in_array($question->content->testing_type, $allowedTestingTypes['theme_' . $question->theme->theme_id]))
+                || $question->content->testing_type == $allowedTestingTypes['theme_' . $question->theme->theme_id]) {
                 $variants[$counter / $divider + 1][] = $question;
                 $counter++;
             }
@@ -225,5 +239,23 @@ class Question extends ActiveRecord
     public function getContent()
     {
         return $this->hasOne(QuestionContent::className(), ['question_id' => 'id']);
+    }
+
+
+    public static function availableTestingTypes($themeId)
+    {
+        $questions = QuestionContent::find()
+            ->joinWith('theme')
+            ->andWhere(['questions_themes.theme_id' => $themeId])
+            ->select('questions_content.testing_type')
+            ->distinct()
+            ->all();
+
+        $availableTestingTypes = [];
+        foreach ($questions as $question) {
+            $availableTestingTypes[$question->testing_type] = self::humanTestingType($question->testing_type);
+        }
+        return array_unique($availableTestingTypes);
+
     }
 }

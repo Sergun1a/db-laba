@@ -55,4 +55,9 @@ class QuestionContent extends ActiveRecord
             }
         }
     }
+
+    public function getTheme()
+    {
+        return $this->hasOne(QuestionTheme::className(), ['question_id' => 'question_id']);
+    }
 }
