@@ -52,7 +52,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left"><a href="https://github.com/Sergun1a/db-laba">Sergun1a</a> <?= date('Y') ?></p>
+        <p class="pull-left"><a href="https://github.com/Sergun1a/db-laba/tree/tests">Sergun1a</a> <?= date('Y') ?></p>
     </div>
 </footer>
 
