@@ -163,6 +163,9 @@ class SiteController extends Controller
 
     public function actionAdmin()
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(Url::toRoute('site/login'));
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => QuestionContent::find(),
             'pagination' => [
