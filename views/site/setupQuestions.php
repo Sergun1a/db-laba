@@ -34,7 +34,7 @@ $this->title = 'Подготовка';
         <?= $form->field($model, 'include_hard')->checkbox()->label("Включать сложные задачи") ?>
     <?php } ?>
     <?= $form->field($model, 'points')->textInput(['style' => 'width:100px'])
-        ->label("Опционально. Количество баллов"); ?>
+        ->label("Опционально. Количество заданий в варианте работы"); ?>
     <?= Html::submitButton('Готово', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
 
     <?php ActiveForm::end(); ?>
