@@ -111,7 +111,7 @@ class SiteController extends Controller
                     $questions = Question::prepareQuestions($model->themes, $model->include_hard, $model->points == '' ? -1 : $model->points, $specifyModel->getAttributes());
                     $cache->flush();
                     if (empty($questions)) {
-                        $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество баллов');
+                        $model->addError('points', 'Мы не смогли составить вариант по заданным критериям. Пожалуйста добавьте ещё тем или уменьшите количество заданий в варианте работы');
                         return $this->render('setupQuestions', [
                             'model' => $model,
                         ]);
