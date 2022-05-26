@@ -131,7 +131,6 @@ class SiteController extends Controller
                 'model' => $model,
             ]);
         } catch (\yii\base\ErrorException $ex) {
-            var_dump($ex);
             $cache->flush();
             return $this->redirect(Url::toRoute('site/questions'));
         }
