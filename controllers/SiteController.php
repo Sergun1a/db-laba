@@ -189,9 +189,11 @@ class SiteController extends Controller
             $resQ = $question->save();
         }
         if ($questionContent->load(Yii::$app->request->post())) {
+            $questionContent->question_id = $question->id;
             $resC = $questionContent->save();
         }
-        if ($questionTheme->load(Yii::$app->request->post())) {
+        if ($resQ && $questionTheme->load(Yii::$app->request->post())) {
+            $questionTheme->question_id = $question->id;
             $resT = $questionTheme->save();
         }
         if ($resQ && $resC && $resT) {
@@ -214,14 +216,14 @@ class SiteController extends Controller
         } else {
             return $this->redirect(Url::toRoute('site/admin'));
         }
-        if ($question->load(Yii::$app->request->post())) {
-            $question->save();
-        }
         if ($questionContent->load(Yii::$app->request->post())) {
             $questionContent->save();
         }
         if ($questionTheme->load(Yii::$app->request->post())) {
             $questionTheme->save();
+        }
+        if ($question->load(Yii::$app->request->post())) {
+            $question->save();
         }
         return $this->render('form', [
             'questionContent' => $questionContent,

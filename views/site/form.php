@@ -26,6 +26,8 @@ $this->title = "Создание/Редактирование вопроса";
 <?= $form->field($questionContent, 'answer_options1')->textarea(['rows' => 1])->label("Варианты ответа (через точку с запятой)") ?>
 <?= $form->field($questionContent, 'answer_options2')->textarea(['rows' => 1])
     ->label("Варианты ответа 2 (с чем устанавливать соответствия) (через запятую)") ?>
+<div id="answer-support-text"></div>
+<?= $form->field($questionContent, 'answer')->textarea(['rows' => 1])->label("Ответ на вопрос") ?>
 <br>
 <?= $form->field($questionTheme, 'theme_id')
     ->dropDownList(Question::themesList())
@@ -61,6 +63,11 @@ $this->title = "Создание/Редактирование вопроса";
                 answer_options1.show();
                 answer_options2.hide();
             }
+        }
+
+        let content_help = $('#answer-support-text');
+        function displayAnswerAndContextHelp() {
+
         }
 
         displayAnswerOptions($('#questioncontent-testing_type').val());
