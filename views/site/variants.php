@@ -1,6 +1,9 @@
 <?php
 /* @var $variants */
+
 /* @var $type */
+
+use yii\helpers\Url;
 
 $this->title = 'Варианты';
 Yii::$app->cache->flush();
@@ -13,6 +16,7 @@ Yii::$app->cache->flush();
 
 <div class="container">
     <span id="question"><h1>Варианты с текстами задач и вопросами</h1></span>
+    <span id="moodle-export"><a target="_blank" href="<?= Url::toRoute(['site/moodle-xml']) ?>"><h3>Выгрузить вопросы в формате Moodle XML</h3></a></span>
     <hr>
     <?php foreach ($variants
 
@@ -31,7 +35,7 @@ Yii::$app->cache->flush();
                                     <div class="row">
                                         <div class="col-md-6 col-lg-6"><?= $key + 1 . ') ' . trim($option) ?></div>
                                         <?php if ($question->content->testing_type == \app\models\Question::MAPPING) {
-                                            $options2 = explode(',', $question->content->answer_options2);
+                                            $options2 = explode(';', $question->content->answer_options2);
                                             if (!empty($options2[$key])) { ?>
                                                 <div class="col-md-6 col-lg-6"><?= $key + 1 . ') ' . trim($options2[$key]) ?></div>
                                             <?php }
@@ -39,15 +43,15 @@ Yii::$app->cache->flush();
                                     </div>
                                 <?php } ?>
                                 <?php if ($question->content->testing_type == \app\models\Question::MAPPING &&
-                                    explode(',', $question->content->answer_options1) < explode(',', $question->content->answer_options2)) {
-                                    $options2 = explode(',', $question->content->answer_options2);
-                                    $options1 = explode(',', $question->content->answer_options1);
+                                    explode(';', $question->content->answer_options1) < explode(';', $question->content->answer_options2)) {
+                                    $options2 = explode(';', $question->content->answer_options2);
+                                    $options1 = explode(';', $question->content->answer_options1);
                                     for ($i = sizeof($options1); $i < sizeof($options2); $i++) { ?>
                                         <div class="row">
                                             <div class="col-md-6 col-lg-6"></div>
                                             <?php if ($question->content->testing_type == \app\models\Question::MAPPING) {
                                                 if (!empty($options2[$i])) { ?>
-                                                    <div class="col-md-6 col-lg-6"><?= $i+1 . ') ' . trim($options2[$i]) ?></div>
+                                                    <div class="col-md-6 col-lg-6"><?= $i + 1 . ') ' . trim($options2[$i]) ?></div>
                                                 <?php }
                                             } ?>
                                         </div>

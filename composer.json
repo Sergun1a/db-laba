@@ -25,7 +25,8 @@
     "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
     "2amigos/yii2-multi-select-widget": "*",
     "yiisoft/yii2-debug": "~2.1.0",
-    "yiisoft/yii2-gii": "~2.1.0"
+    "yiisoft/yii2-gii": "~2.1.0",
+    "ext-SimpleXML": "^7.3"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",

@@ -12,6 +12,7 @@ use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
 
@@ -28,7 +29,7 @@ class SiteController extends Controller
                 'only' => ['questions'],
                 'rules' => [
                     [
-                        'actions' => ['questions', 'login', 'testingType'],
+                        'actions' => ['questions', 'login', 'testingType', 'moodleXml'],
                         'allow' => true,
                         'roles' => ['?', '@'],
                     ],
@@ -116,6 +117,7 @@ class SiteController extends Controller
                             'model' => $model,
                         ]);
                     }
+                    \Yii::$app->getSession()->setFlash('xmlVariants', Json::encode($questions));
                     return $this->render('variants', [
                         'type' => $type,
                         'variants' => $questions,
@@ -248,5 +250,10 @@ class SiteController extends Controller
             $question->delete();
         }
         return $this->redirect(Url::toRoute('site/admin'));
+    }
+
+    public function actionMoodleXml()
+    {
+        var_dump(Yii::$app->session->getFlash('xmlVariants'));
     }
 }
