@@ -126,13 +126,13 @@ class QuestionContent extends ActiveRecord
 
     }
 
-    private function answerToArray()
+    public function answerToArray()
     {
         return $this->standartify(explode(';', $this->answer));
     }
 
 
-    private function answersOptionsToArray()
+    public function answersOptionsToArray()
     {
         $optionsArray = [];
         if ($this->testing_type == Question::FREE_FORM) {

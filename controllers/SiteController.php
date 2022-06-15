@@ -15,6 +15,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
+use yii\web\RangeNotSatisfiableHttpException;
 
 class SiteController extends Controller
 {
@@ -117,7 +118,7 @@ class SiteController extends Controller
                             'model' => $model,
                         ]);
                     }
-                    \Yii::$app->getSession()->setFlash('xmlVariants', Json::encode($questions));
+                    \Yii::$app->getSession()->set('xmlVariants', Json::encode($questions));
                     return $this->render('variants', [
                         'type' => $type,
                         'variants' => $questions,
@@ -254,6 +255,63 @@ class SiteController extends Controller
 
     public function actionMoodleXml()
     {
-        var_dump(Yii::$app->session->getFlash('xmlVariants'));
+        $variants = Yii::$app->session->get('xmlVariants');
+        $moodleXml = new \SimpleXMLElement('<?xml version="1.0"?><quiz></quiz>');
+        try {
+            $variants = Json::decode($variants);
+            foreach ($variants as $variantNumber => $questions) {
+                foreach ($questions as $questionArr) {
+                    $question = Question::findOne(['id' => $questionArr['id']]);
+                    if (empty($question)) {
+                        continue;
+                    }
+                    $currentQuestionNode = $moodleXml->addChild('question');
+                    if (in_array($question->content->testing_type, [Question::MULTIPLE_CHOICE, Question::ALTERNATIVE_CHOICE])) {
+                        // указываю тип вопроса
+                        $currentQuestionNode->addAttribute('type', 'multichoice');
+                        if ($question->content->testing_type == Question::ALTERNATIVE_CHOICE) {
+                            $currentQuestionNode->addChild('single', true);
+                        }
+                        // добавляю текст вопроса
+                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
+                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        // добавляю варианты ответа на вопрос
+                        $answersOptions = $question->content->answersOptionsToArray();
+                        $answers = $question->content->answerToArray();
+                        foreach ($answersOptions as $answersOption) {
+                            $answerNode = $currentQuestionNode->addChild('answer');
+                            if (in_array($answersOption, $answers)) {
+                                $answerNode->addAttribute('fraction', 1 / sizeof($answers));
+                            } else {
+                                $answerNode->addAttribute('fraction', 0);
+                            }
+                            $answerNode->addChild('text', $answersOption);
+                        }
+                    }
+                }
+            }
+            //Yii::$app->session->remove('xmlVariants');
+            return Yii::$app->response->sendContentAsFile($moodleXml->asXML(), 'variants_export' . time() . '.xml');
+        } catch (yii\base\ErrorException|yii\base\InvalidArgumentException $ex) {
+            echo "Пожалуйста закройте страницу и запустите выгрузку ещё раз.";
+        } catch (RangeNotSatisfiableHttpException $e) {
+            echo "Возникла проблема в синтаксисе при генериции xml файла";
+        }
+    }
+
+
+    private static function array_to_xml($data, &$xml_data)
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                if (is_numeric($key)) {
+                    $key = 'item' . $key; //dealing with <0/>..<n/> issues
+                }
+                $subnode = $xml_data->addChild($key);
+                self::array_to_xml($value, $subnode);
+            } else {
+                $xml_data->addChild("$key", htmlspecialchars("$value"));
+            }
+        }
     }
 }
