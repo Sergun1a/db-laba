@@ -287,6 +287,67 @@ class SiteController extends Controller
                             }
                             $answerNode->addChild('text', $answersOption);
                         }
+                        // включаю перемешивание ответов
+                        $currentQuestionNode->addChild('shuffleanswers', true);
+                    }
+                    if ($question->content->testing_type == Question::MAPPING) {
+                        // указываю тип вопроса
+                        $currentQuestionNode->addAttribute('type', 'matching');
+                        // добавляю текст вопроса
+                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
+                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        // добавляю варианты ответа на вопрос
+                        $answers = $question->content->answerToArray();
+                        for ($i = 0; $i < sizeof($answers); $i = $i + 2) {
+                            $subquestionNode = $currentQuestionNode->addChild('subquestion');
+                            $subquestionNode->addChild('text', $answers[$i]);
+                            $answerNode = $subquestionNode->addChild('answer');
+                            $answerNode->addChild('text', $answers[$i + 1]);
+                        }
+                        // включаю перемешивание ответов
+                        $currentQuestionNode->addChild('shuffleanswers', true);
+                    }
+                    if ($question->content->testing_type == Question::FREE_FORM) {
+                        // указываю тип вопроса
+                        $currentQuestionNode->addAttribute('type', 'essay');
+                        // добавляю текст вопроса
+                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
+                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        // у FREE_FORM нет ответа и автоматической проверки правильности, но формально их нужно указать
+                        $answerNode = $currentQuestionNode->addChild('answer');
+                        $answerNode->addAttribute('fraction', 0);
+                        $answerNode->addChild('text');
+                    }
+                    if ($question->content->testing_type == Question::ADDITION) {
+                        // указываю тип вопроса
+                        $currentQuestionNode->addAttribute('type', 'shortanswer');
+                        // добавляю текст вопроса
+                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
+                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        // добавляю ответы на вопрос
+                        $answers = $question->content->answerToArray();
+                        foreach ($answers as $answer) {
+                            $answerNode = $currentQuestionNode->addChild('answer');
+                            $answerNode->addAttribute('fraction', 100);
+                            $answerNode->addChild('text', $answer);
+                        }
+                    }
+                    if ($question->content->testing_type == Question::SEQUENCE) {
+                        // указываю тип вопроса
+                        $currentQuestionNode->addAttribute('type', 'matching');
+                        // добавляю текст вопроса
+                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
+                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        // добавляю ответы на вопрос
+                        $answers = $question->content->answerToArray();
+                        foreach ($answers as $key => $answer) {
+                            $subquestionNode = $currentQuestionNode->addChild('subquestion');
+                            $subquestionNode->addChild('text', $key + 1);
+                            $answerNode = $subquestionNode->addChild('answer');
+                            $answerNode->addChild('text', $answer);
+                        }
+                        // включаю перемешивание ответов
+                        $currentQuestionNode->addChild('shuffleanswers', true);
                     }
                 }
             }
@@ -296,22 +357,6 @@ class SiteController extends Controller
             echo "Пожалуйста закройте страницу и запустите выгрузку ещё раз.";
         } catch (RangeNotSatisfiableHttpException $e) {
             echo "Возникла проблема в синтаксисе при генериции xml файла";
-        }
-    }
-
-
-    private static function array_to_xml($data, &$xml_data)
-    {
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                if (is_numeric($key)) {
-                    $key = 'item' . $key; //dealing with <0/>..<n/> issues
-                }
-                $subnode = $xml_data->addChild($key);
-                self::array_to_xml($value, $subnode);
-            } else {
-                $xml_data->addChild("$key", htmlspecialchars("$value"));
-            }
         }
     }
 }
