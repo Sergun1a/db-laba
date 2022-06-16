@@ -46,6 +46,7 @@ $this->title = "Создание/Редактирование вопроса";
     $(document).ready(function () {
         let answer_options1 = $('.field-questioncontent-answer_options1');
         let answer_options2 = $('.field-questioncontent-answer_options2');
+        let answer = $('.field-questioncontent-answer');
 
         function displayAnswerOptions(type) {
             if (type === '<?=Question::MAPPING?>') {
@@ -66,13 +67,38 @@ $this->title = "Создание/Редактирование вопроса";
         }
 
         let context_help = $('#answer-support-text');
-        function displayAnswerAndContextHelp() {
 
+        function displayAnswerAndContextHelp(type) {
+            if (type === '<?=Question::MAPPING?>') {
+                answer.show();
+                context_help.show();
+                context_help.text("Укажите ответ в формате \"название 1;ответ 1;название 2;ответ 2;...\"");
+            }
+            if (type === '<?=Question::FREE_FORM?>') {
+                context_help.hide();
+                answer.hide();
+            }
+            if (type === '<?=Question::ADDITION?>' || type === '<?=Question::MULTIPLE_CHOICE?>') {
+                answer.show();
+                context_help.show();
+                context_help.text("Укажите ответ или ответы через точку с запятой. Например: \"ответ 1;ответ 2\" или \"единственный ответ\"");
+            }
+            if (type === '<?=Question::ALTERNATIVE_CHOICE?>') {
+                answer.show();
+                context_help.hide();
+            }
+            if (type === '<?=Question::SEQUENCE?>') {
+                answer.show();
+                context_help.show();
+                context_help.text("Укажите ответы через точку с запятой в таком порядке который требует текст вопроса. Например: \"a;b;c\"");
+            }
         }
 
         displayAnswerOptions($('#questioncontent-testing_type').val());
+        displayAnswerAndContextHelp($('#questioncontent-testing_type').val());
         $('#questioncontent-testing_type').change(function () {
             displayAnswerOptions($('#questioncontent-testing_type').val());
+            displayAnswerAndContextHelp($('#questioncontent-testing_type').val());
         });
     });
 </script>

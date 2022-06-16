@@ -281,7 +281,7 @@ class SiteController extends Controller
                         foreach ($answersOptions as $answersOption) {
                             $answerNode = $currentQuestionNode->addChild('answer');
                             if (in_array($answersOption, $answers)) {
-                                $answerNode->addAttribute('fraction', 1 / sizeof($answers));
+                                $answerNode->addAttribute('fraction', (1 / sizeof($answers))*100);
                             } else {
                                 $answerNode->addAttribute('fraction', 0);
                             }
