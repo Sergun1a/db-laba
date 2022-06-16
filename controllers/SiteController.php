@@ -12,6 +12,7 @@ use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -287,7 +288,7 @@ class SiteController extends Controller
                             } else {
                                 $answerNode->addAttribute('fraction', 0);
                             }
-                            $answerNode->addChild('text', $answersOption);
+                            $answerNode->addChild('text', Html::encode($answersOption));
                         }
                         // включаю перемешивание ответов
                         $currentQuestionNode->addChild('shuffleanswers', true);
@@ -306,7 +307,7 @@ class SiteController extends Controller
                             $subquestionNode = $currentQuestionNode->addChild('subquestion');
                             $subquestionNode->addChild('text', $answers[$i]);
                             $answerNode = $subquestionNode->addChild('answer');
-                            $answerNode->addChild('text', $answers[$i + 1]);
+                            $answerNode->addChild('text', Html::encode($answers[$i + 1]));
                         }
                         // включаю перемешивание ответов
                         $currentQuestionNode->addChild('shuffleanswers', true);
@@ -337,7 +338,7 @@ class SiteController extends Controller
                         foreach ($answers as $answer) {
                             $answerNode = $currentQuestionNode->addChild('answer');
                             $answerNode->addAttribute('fraction', 100);
-                            $answerNode->addChild('text', $answer);
+                            $answerNode->addChild('text', Html::encode($answer));
                         }
                     }
                     if ($question->content->testing_type == Question::SEQUENCE) {
@@ -354,7 +355,7 @@ class SiteController extends Controller
                             $subquestionNode = $currentQuestionNode->addChild('subquestion');
                             $subquestionNode->addChild('text', $key + 1);
                             $answerNode = $subquestionNode->addChild('answer');
-                            $answerNode->addChild('text', $answer);
+                            $answerNode->addChild('text', Html::encode($answer));
                         }
                         // включаю перемешивание ответов
                         $currentQuestionNode->addChild('shuffleanswers', true);
