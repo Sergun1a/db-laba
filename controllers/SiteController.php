@@ -273,15 +273,17 @@ class SiteController extends Controller
                             $currentQuestionNode->addChild('single', true);
                         }
                         // добавляю текст вопроса
-                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
-                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        $questionNameNode = $currentQuestionNode->addChild('name');
+                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionTextNode = $currentQuestionNode->addChild('questiontext');
+                        $questionTextNode->addChild('text', $question->content->content);
                         // добавляю варианты ответа на вопрос
                         $answersOptions = $question->content->answersOptionsToArray();
                         $answers = $question->content->answerToArray();
                         foreach ($answersOptions as $answersOption) {
                             $answerNode = $currentQuestionNode->addChild('answer');
                             if (in_array($answersOption, $answers)) {
-                                $answerNode->addAttribute('fraction', (1 / sizeof($answers))*100);
+                                $answerNode->addAttribute('fraction', (1 / sizeof($answers)) * 100);
                             } else {
                                 $answerNode->addAttribute('fraction', 0);
                             }
@@ -294,8 +296,10 @@ class SiteController extends Controller
                         // указываю тип вопроса
                         $currentQuestionNode->addAttribute('type', 'matching');
                         // добавляю текст вопроса
-                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
-                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        $questionNameNode = $currentQuestionNode->addChild('name');
+                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionTextNode = $currentQuestionNode->addChild('questiontext');
+                        $questionTextNode->addChild('text', $question->content->content);
                         // добавляю варианты ответа на вопрос
                         $answers = $question->content->answerToArray();
                         for ($i = 0; $i < sizeof($answers); $i = $i + 2) {
@@ -311,8 +315,10 @@ class SiteController extends Controller
                         // указываю тип вопроса
                         $currentQuestionNode->addAttribute('type', 'essay');
                         // добавляю текст вопроса
-                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
-                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        $questionNameNode = $currentQuestionNode->addChild('name');
+                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionTextNode = $currentQuestionNode->addChild('questiontext');
+                        $questionTextNode->addChild('text', $question->content->content);
                         // у FREE_FORM нет ответа и автоматической проверки правильности, но формально их нужно указать
                         $answerNode = $currentQuestionNode->addChild('answer');
                         $answerNode->addAttribute('fraction', 0);
@@ -322,8 +328,10 @@ class SiteController extends Controller
                         // указываю тип вопроса
                         $currentQuestionNode->addAttribute('type', 'shortanswer');
                         // добавляю текст вопроса
-                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
-                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        $questionNameNode = $currentQuestionNode->addChild('name');
+                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionTextNode = $currentQuestionNode->addChild('questiontext');
+                        $questionTextNode->addChild('text', $question->content->content);
                         // добавляю ответы на вопрос
                         $answers = $question->content->answerToArray();
                         foreach ($answers as $answer) {
@@ -336,8 +344,10 @@ class SiteController extends Controller
                         // указываю тип вопроса
                         $currentQuestionNode->addAttribute('type', 'matching');
                         // добавляю текст вопроса
-                        $currentQuestionNode->addChild('name', "Вопрос №" . $question->id);
-                        $currentQuestionNode->addChild('questiontext', $question->content->content);
+                        $questionNameNode = $currentQuestionNode->addChild('name');
+                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionTextNode = $currentQuestionNode->addChild('questiontext');
+                        $questionTextNode->addChild('text', $question->content->content);
                         // добавляю ответы на вопрос
                         $answers = $question->content->answerToArray();
                         foreach ($answers as $key => $answer) {
