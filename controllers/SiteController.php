@@ -12,7 +12,6 @@ use yii\base\DynamicModel;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -275,9 +274,9 @@ class SiteController extends Controller
                         }
                         // добавляю текст вопроса
                         $questionNameNode = $currentQuestionNode->addChild('name');
-                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionNameNode->addChild('text', "<p>Вопрос №" . $question->id . '</p>');
                         $questionTextNode = $currentQuestionNode->addChild('questiontext');
-                        $questionTextNode->addChild('text', $question->content->content);
+                        $questionTextNode->addChild('text', "<p>" . $question->content->content . "</p>");
                         // добавляю варианты ответа на вопрос
                         $answersOptions = $question->content->answersOptionsToArray();
                         $answers = $question->content->answerToArray();
@@ -288,7 +287,7 @@ class SiteController extends Controller
                             } else {
                                 $answerNode->addAttribute('fraction', 0);
                             }
-                            $answerNode->addChild('text', Html::encode($answersOption));
+                            $answerNode->addChild('text', "<p>" . $answersOption . "</p>");
                         }
                         // включаю перемешивание ответов
                         $currentQuestionNode->addChild('shuffleanswers', true);
@@ -298,16 +297,16 @@ class SiteController extends Controller
                         $currentQuestionNode->addAttribute('type', 'matching');
                         // добавляю текст вопроса
                         $questionNameNode = $currentQuestionNode->addChild('name');
-                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionNameNode->addChild('text', "<p>Вопрос №" . $question->id . '</p>');
                         $questionTextNode = $currentQuestionNode->addChild('questiontext');
-                        $questionTextNode->addChild('text', $question->content->content);
+                        $questionTextNode->addChild('text', "<p>" . $question->content->content . "</p>");
                         // добавляю варианты ответа на вопрос
                         $answers = $question->content->answerToArray();
                         for ($i = 0; $i < sizeof($answers); $i = $i + 2) {
                             $subquestionNode = $currentQuestionNode->addChild('subquestion');
                             $subquestionNode->addChild('text', $answers[$i]);
                             $answerNode = $subquestionNode->addChild('answer');
-                            $answerNode->addChild('text', Html::encode($answers[$i + 1]));
+                            $answerNode->addChild('text', "<p>" . $answers[$i + 1] . "</p>");
                         }
                         // включаю перемешивание ответов
                         $currentQuestionNode->addChild('shuffleanswers', true);
@@ -317,9 +316,9 @@ class SiteController extends Controller
                         $currentQuestionNode->addAttribute('type', 'essay');
                         // добавляю текст вопроса
                         $questionNameNode = $currentQuestionNode->addChild('name');
-                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionNameNode->addChild('text', "<p>Вопрос №" . $question->id . '</p>');
                         $questionTextNode = $currentQuestionNode->addChild('questiontext');
-                        $questionTextNode->addChild('text', $question->content->content);
+                        $questionTextNode->addChild('text', "<p>" . $question->content->content . "</p>");
                         // у FREE_FORM нет ответа и автоматической проверки правильности, но формально их нужно указать
                         $answerNode = $currentQuestionNode->addChild('answer');
                         $answerNode->addAttribute('fraction', 0);
@@ -330,15 +329,15 @@ class SiteController extends Controller
                         $currentQuestionNode->addAttribute('type', 'shortanswer');
                         // добавляю текст вопроса
                         $questionNameNode = $currentQuestionNode->addChild('name');
-                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionNameNode->addChild('text', "<p>Вопрос №" . $question->id . '</p>');
                         $questionTextNode = $currentQuestionNode->addChild('questiontext');
-                        $questionTextNode->addChild('text', $question->content->content);
+                        $questionTextNode->addChild('text', "<p>" . $question->content->content . "</p>");
                         // добавляю ответы на вопрос
                         $answers = $question->content->answerToArray();
                         foreach ($answers as $answer) {
                             $answerNode = $currentQuestionNode->addChild('answer');
                             $answerNode->addAttribute('fraction', 100);
-                            $answerNode->addChild('text', Html::encode($answer));
+                            $answerNode->addChild('text', "<p>" . $answer . "</p>");
                         }
                     }
                     if ($question->content->testing_type == Question::SEQUENCE) {
@@ -346,16 +345,16 @@ class SiteController extends Controller
                         $currentQuestionNode->addAttribute('type', 'matching');
                         // добавляю текст вопроса
                         $questionNameNode = $currentQuestionNode->addChild('name');
-                        $questionNameNode->addChild('text', "Вопрос №" . $question->id);
+                        $questionNameNode->addChild('text', "<p>Вопрос №" . $question->id . '</p>');
                         $questionTextNode = $currentQuestionNode->addChild('questiontext');
-                        $questionTextNode->addChild('text', $question->content->content);
+                        $questionTextNode->addChild('text', "<p>" . $question->content->content . "</p>");
                         // добавляю ответы на вопрос
                         $answers = $question->content->answerToArray();
                         foreach ($answers as $key => $answer) {
                             $subquestionNode = $currentQuestionNode->addChild('subquestion');
                             $subquestionNode->addChild('text', $key + 1);
                             $answerNode = $subquestionNode->addChild('answer');
-                            $answerNode->addChild('text', Html::encode($answer));
+                            $answerNode->addChild('text', "<p>" . $answer . "</p>");
                         }
                         // включаю перемешивание ответов
                         $currentQuestionNode->addChild('shuffleanswers', true);
