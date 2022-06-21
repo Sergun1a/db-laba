@@ -362,7 +362,7 @@ class SiteController extends Controller
                 }
             }
             //Yii::$app->session->remove('xmlVariants');
-            return Yii::$app->response->sendContentAsFile($moodleXml->asXML(), 'variants_export' . time() . '.xml');
+            return Yii::$app->response->sendContentAsFile($moodleXml->asXML(), 'export' . time() . '.xml');
         } catch (yii\base\ErrorException|yii\base\InvalidArgumentException $ex) {
             echo "Пожалуйста закройте страницу и запустите выгрузку ещё раз.";
         } catch (RangeNotSatisfiableHttpException $e) {
